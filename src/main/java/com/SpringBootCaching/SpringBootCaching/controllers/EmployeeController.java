@@ -1,7 +1,9 @@
 package com.SpringBootCaching.SpringBootCaching.controllers;
 
 import com.SpringBootCaching.SpringBootCaching.dto.EmployeeDto;
+import com.SpringBootCaching.SpringBootCaching.entities.SalarlyEntities;
 import com.SpringBootCaching.SpringBootCaching.services.EmployeeService;
+import com.SpringBootCaching.SpringBootCaching.services.SalarlyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ public class EmployeeController {
 
 
    private final EmployeeService employeeService;
+   private final SalarlyService salarlyService;
 
 
    @GetMapping("/{id}")
@@ -40,6 +43,12 @@ public class EmployeeController {
    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
       employeeService.deleteEmployee(id);
       return ResponseEntity.noContent().build();
+   }
+
+   @PutMapping("/incrementBalance/{accountId}")
+   public ResponseEntity<SalarlyEntities> incrementBalance(@PathVariable Long accountId) {
+      SalarlyEntities salaryAccount = salarlyService.incrementBalance(accountId);
+      return ResponseEntity.ok(salaryAccount);
    }
 
 

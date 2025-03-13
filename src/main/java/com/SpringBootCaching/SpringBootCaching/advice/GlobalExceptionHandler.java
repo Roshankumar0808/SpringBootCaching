@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(StaleObjectStateException.class)
     public ResponseEntity<?> resourceNotFound(StaleObjectStateException ex){
         log.error(ex.getLocalizedMessage());
-        return new ResponseEntity<>("stale data", HttpStatus.CONFLICT);
+        return new ResponseEntity<>("stale data\n", HttpStatus.CONFLICT);
     }
 
 

@@ -5,6 +5,7 @@ import com.SpringBootCaching.SpringBootCaching.entities.EmployeeEnitities;
 import com.SpringBootCaching.SpringBootCaching.exception.ResourceNotFoundException;
 import com.SpringBootCaching.SpringBootCaching.repository.EmployeeRepo;
 import com.SpringBootCaching.SpringBootCaching.services.EmployeeService;
+import com.SpringBootCaching.SpringBootCaching.services.SalarlyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ import java.util.List;
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepo employeeRepo;
     private final ModelMapper modelMapper;
+    private final SalarlyService salarlyService;
     private final String CACHE_NAME="employees";
 
     @Override
@@ -36,6 +39,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @CachePut(cacheNames = CACHE_NAME,key = "#result.id")
+    @Transactional
     public EmployeeDto createNewEmployee(EmployeeDto employeeDto) {
         List<EmployeeEnitities> employeeEnitities=employeeRepo.findByEmail(employeeDto.getEmail());
 
@@ -46,6 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         EmployeeEnitities employeeEnity=modelMapper.map(employeeDto, EmployeeEnitities.class);
         EmployeeEnitities saveemployee=employeeRepo.save(employeeEnity);
+        salarlyService.createAccount(saveemployee);
         return modelMapper.map(saveemployee, EmployeeDto.class);
     }
 
